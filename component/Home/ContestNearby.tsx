@@ -15,26 +15,29 @@ const nearbyContests = [
     date: "Feb 15, 2025",
     participants: "899",
     status: "Active" as const,
+    category: "Giveaways",
   },
   {
     id: 202,
     image: "/images/contest2.jpg",
-    badge: "Giveaway",
+    badge: "Photo",
     title: "Best Travel Photo Contest",
     prize: "$1,000 Travel Voucher",
     date: "Feb 15, 2025",
     participants: "899",
     status: "Ended" as const,
+    category: "Submissions",
   },
   {
     id: 203,
     image: "/images/contest3.jpg",
-    badge: "Giveaway",
+    badge: "Design",
     title: "Win a Premium Gaming Setup",
     prize: "$2,500 Gaming PC + Accessories",
     date: "Feb 15, 2025",
     participants: "1,145",
     status: "Active" as const,
+    category: "Submissions",
   },
   {
     id: 204,
@@ -45,41 +48,50 @@ const nearbyContests = [
     date: "Feb 15, 2025",
     participants: "1,145",
     status: "Active" as const,
+    category: "Giveaways",
   },
   {
     id: 205,
     image: "/images/contest2.jpg",
-    badge: "Giveaway",
+    badge: "Poll",
     title: "Best Travel Photo Contest",
     prize: "$1,000 Travel Voucher",
     date: "Feb 15, 2025",
     participants: "899",
     status: "Ended" as const,
+    category: "Polls",
   },
   {
     id: 206,
     image: "/images/contest3.jpg",
-    badge: "Giveaway",
-    title: "Best Travel Photo Contest",
-    prize: "$1,000 Travel Voucher",
+    badge: "Poll",
+    title: "Predict the Next Champion",
+    prize: "$500 Cash",
     date: "Feb 15, 2025",
     participants: "899",
     status: "Active" as const,
+    category: "Polls",
   },
 ];
 
+const ROUTE_MAP: Record<string, string> = {
+  Giveaways:   "giveaway",
+  Submissions: "submission",
+  Polls:       "poll",
+};
+
 export default function ContestNearby() {
   const router = useRouter();
-
-  // Auth Check
   const { isAuthenticated } = useSelector((state: any) => state.auth);
 
-  // Navigation Logic
-  const handleViewContest = (id: number) => {
+  const handleViewContest = (id: number, category: string) => {
+    const segment = ROUTE_MAP[category] ?? "giveaway";
+    const path    = `/contests/${segment}/${id}`;
+
     if (isAuthenticated) {
-      router.push(`/contests/${id}`);
+      router.push(path);
     } else {
-      router.push("/auth/sign-in");
+      router.push(`/auth/sign-in?redirect=${encodeURIComponent(path)}`);
     }
   };
 
@@ -99,16 +111,16 @@ export default function ContestNearby() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-          {nearbyContests.map((contest, i) => (
+          {nearbyContests.map((contest) => (
             <ContestCard
-              key={i}
+              key={contest.id}
               {...contest}
-              onViewContest={() => handleViewContest(contest.id)}
+              onViewContest={() => handleViewContest(contest.id, contest.category)}
             />
           ))}
         </div>
 
-        {/* View All Button */}
+        {/* View All */}
         <div className="flex justify-center mt-10 sm:mt-12">
           <button
             onClick={() => router.push("/contests")}

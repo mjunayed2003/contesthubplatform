@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 import ContestCard from "../Contest-Card/ContestCard";
 import { ChevronsRight } from "lucide-react";
 
-// Data kept exactly as requested (Added IDs for routing)
 const trendingContests = [
   {
     id: 101,
@@ -16,26 +15,29 @@ const trendingContests = [
     date: "Feb 15, 2025",
     participants: "1,145",
     status: "Active" as const,
+    category: "Giveaways",
   },
   {
     id: 102,
     image: "/images/contest2.jpg",
-    badge: "Giveaway",
+    badge: "Photo",
     title: "Best Travel Photo Contest",
     prize: "$1,000 Travel Voucher",
     date: "Feb 15, 2025",
     participants: "899",
     status: "Ended" as const,
+    category: "Submissions",
   },
   {
     id: 103,
     image: "/images/contest3.jpg",
-    badge: "Giveaway",
-    title: "Best Travel Photo Contest",
+    badge: "Design",
+    title: "UI/UX Design Challenge",
     prize: "$1,000 Travel Voucher",
     date: "Feb 15, 2025",
     participants: "899",
     status: "Active" as const,
+    category: "Submissions",
   },
   {
     id: 104,
@@ -46,41 +48,51 @@ const trendingContests = [
     date: "Feb 15, 2025",
     participants: "1,145",
     status: "Active" as const,
+    category: "Giveaways",
   },
   {
     id: 105,
-    image: "/images/contest2.jpg",
-    badge: "Giveaway",
+    image: "/images/contest1.jpg",
+    badge: "Poll",
     title: "Best Travel Photo Contest",
     prize: "$1,000 Travel Voucher",
     date: "Feb 15, 2025",
     participants: "899",
     status: "Ended" as const,
+    category: "Polls",
   },
   {
     id: 106,
     image: "/images/contest3.jpg",
-    badge: "Giveaway",
-    title: "Best Travel Photo Contest",
-    prize: "$1,000 Travel Voucher",
+    badge: "Poll",
+    title: "Predict the Next Champion",
+    prize: "$500 Cash",
     date: "Feb 15, 2025",
     participants: "899",
     status: "Active" as const,
+    category: "Polls",
   },
 ];
 
+// ── category → route segment map ──────────────────────────────
+const ROUTE_MAP: Record<string, string> = {
+  Giveaways:   "giveaway",
+  Submissions: "submission",
+  Polls:       "poll",
+};
+
 export default function TrendingNow() {
   const router = useRouter();
-  
-  // Auth Check
   const { isAuthenticated } = useSelector((state: any) => state.auth);
 
-  // Navigation Logic
-  const handleViewContest = (id: number) => {
+  const handleViewContest = (id: number, category: string) => {
+    const segment = ROUTE_MAP[category] ?? "giveaway";
+    const path    = `/contests/${segment}/${id}`;
+
     if (isAuthenticated) {
-      router.push(`/contests/${id}`);
+      router.push(path);
     } else {
-      router.push("/auth/sign-in");
+      router.push(`/auth/sign-in?redirect=${encodeURIComponent(path)}`);
     }
   };
 
@@ -100,21 +112,20 @@ export default function TrendingNow() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-          {trendingContests.map((contest, i) => (
-            <ContestCard 
-              key={i} 
-              {...contest} 
-              // Pass the click handler
-              onViewContest={() => handleViewContest(contest.id)}
+          {trendingContests.map((contest) => (
+            <ContestCard
+              key={contest.id}
+              {...contest}
+              onViewContest={() => handleViewContest(contest.id, contest.category)}
             />
           ))}
         </div>
 
-        {/* View All Button */}
+        {/* View All */}
         <div className="flex justify-center mt-10 sm:mt-12">
-          <button 
-            onClick={() => router.push('/contests')}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-full border border-[#A01C1C] text-[#A01C1C] text-sm font-semibold hover:bg-red-50 transition-colors duration-200 cursor-pointer"
+          <button
+            onClick={() => router.push("/contests")}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-full border border-[#A01C1C] text-[#A01C1C] text-sm font-semibold hover:bg-red-50 transition-colors duration-200"
           >
             View All Contests
             <span className="w-6 h-6 rounded-full bg-[#A01C1C] flex items-center justify-center">
