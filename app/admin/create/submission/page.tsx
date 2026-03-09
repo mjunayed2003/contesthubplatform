@@ -49,7 +49,6 @@ const defaultForm: FormData = {
   votingEndDate: "",
 };
 
-// Steps Definition (5 Steps for Submission Contest)
 const steps = [
   { id: 1, label: "Basic Information" },
   { id: 2, label: "Submission Rules" },
@@ -76,11 +75,11 @@ export default function SubmissionContestPage() {
 
   return (
     <div className="max-w-5xl mx-auto py-8 pb-20">
-      
+
       {/* ─── STEPPER ─── */}
       <div className="flex items-center justify-between mb-16 relative px-4 md:px-12">
         <div className="absolute left-10 right-10 top-6 -translate-y-1/2 h-[1px] border-t-2 border-dashed border-gray-300 -z-10 hidden md:block" />
-        
+
         {steps.map((step) => (
           <div
             key={step.id}
@@ -92,8 +91,8 @@ export default function SubmissionContestPage() {
               currentStep === step.id
                 ? "bg-[#A01C1C] text-white border-[#A01C1C] ring-4 ring-[#A01C1C]/20"
                 : currentStep > step.id
-                ? "bg-[#A01C1C] text-white border-[#A01C1C]"
-                : "bg-[#E5E7EB] text-gray-500 border-gray-200"
+                  ? "bg-[#A01C1C] text-white border-[#A01C1C]"
+                  : "bg-[#E5E7EB] text-gray-500 border-gray-200"
             )}>
               {String(step.id).padStart(2, '0')}
             </div>
@@ -118,8 +117,8 @@ export default function SubmissionContestPage() {
 
       {/* ─── NAVIGATION FOOTER ─── */}
       <div className="flex justify-between mt-8">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={currentStep === 1 ? () => router.back() : prevStep}
           className="h-12 px-10 border-red-100 text-[#A01C1C] hover:bg-red-50 hover:text-[#A01C1C] font-semibold rounded-lg"
         >
@@ -127,14 +126,14 @@ export default function SubmissionContestPage() {
         </Button>
 
         {currentStep === 5 ? (
-          <Button 
+          <Button
             className="h-12 px-10 bg-[#10B981] hover:bg-[#059669] text-white font-semibold rounded-lg shadow-sm"
             onClick={handlePublish}
           >
             Publish Contest <ArrowRight size={18} className="ml-2" />
           </Button>
         ) : (
-          <Button 
+          <Button
             onClick={nextStep}
             className="h-12 px-10 bg-[#A01C1C] hover:bg-[#851616] text-white font-semibold rounded-lg shadow-sm"
           >
@@ -147,11 +146,7 @@ export default function SubmissionContestPage() {
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                SUB COMPONENTS                              */
-/* -------------------------------------------------------------------------- */
-
-// --- STEP 1: Basic Information ---
+// ─── STEP 1 ───────────────────────────────────────────────────
 function Step1BasicInfo({
   form, update,
 }: {
@@ -159,6 +154,9 @@ function Step1BasicInfo({
   update: (f: keyof FormData, v: FormData[keyof FormData]) => void;
 }) {
   const [preview, setPreview] = useState<string | null>(null);
+
+  // আজকের তারিখ — Start Date এর min value
+  const today = new Date().toISOString().split("T")[0];
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
@@ -169,7 +167,7 @@ function Step1BasicInfo({
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       <h2 className="text-xl font-bold text-[#A01C1C] mb-6">Basic Contest Information</h2>
-      
+
       <div className="space-y-1.5">
         <label className="text-sm font-bold text-gray-700">Contest Title <span className="text-red-500">*</span></label>
         <Input
@@ -239,33 +237,30 @@ function Step1BasicInfo({
       <div className="grid grid-cols-2 gap-6">
         <div className="space-y-1.5">
           <label className="text-sm font-bold text-gray-700">Start Date <span className="text-red-500">*</span></label>
-          <div className="relative">
-            <Input
-              type="date"
-              value={form.startDate}
-              onChange={(e) => update("startDate", e.target.value)}
-              className="h-11 bg-white pl-4 border-gray-200 focus-visible:ring-[#A01C1C]"
-            />
-          </div>
+          <Input
+            type="date"
+            value={form.startDate}
+            min={today}
+            onChange={(e) => update("startDate", e.target.value)}
+            className="h-11 bg-white pl-4 border-gray-200 focus-visible:ring-[#A01C1C]"
+          />
         </div>
         <div className="space-y-1.5">
           <label className="text-sm font-bold text-gray-700">End Date <span className="text-red-500">*</span></label>
-          <div className="relative">
-            <Input
-              type="date"
-              value={form.endDate}
-              min={form.startDate}
-              onChange={(e) => update("endDate", e.target.value)}
-              className="h-11 bg-white pl-4 border-gray-200 focus-visible:ring-[#A01C1C]"
-            />
-          </div>
+          <Input
+            type="date"
+            value={form.endDate}
+            min={form.startDate || today}
+            onChange={(e) => update("endDate", e.target.value)}
+            className="h-11 bg-white pl-4 border-gray-200 focus-visible:ring-[#A01C1C]"
+          />
         </div>
       </div>
     </div>
   );
 }
 
-// --- STEP 2: Submission Rules ---
+// ─── STEP 2 ───────────────────────────────────────────────────
 function Step2SubmissionRules({
   form, update,
 }: {
@@ -275,7 +270,7 @@ function Step2SubmissionRules({
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
       <h2 className="text-xl font-bold text-[#A01C1C] mb-6">Submission Rules</h2>
-      
+
       <div className="space-y-2">
         <label className="text-sm font-bold text-gray-700">Submission Requirements <span className="text-red-500">*</span></label>
         <div className="border border-gray-200 rounded-lg p-4 bg-white space-y-3">
@@ -323,7 +318,7 @@ function Step2SubmissionRules({
   );
 }
 
-// --- STEP 3: Voting Rules ---
+// ─── STEP 3 ───────────────────────────────────────────────────
 function Step3VotingRules({
   form, update,
 }: {
@@ -333,7 +328,7 @@ function Step3VotingRules({
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
       <h2 className="text-xl font-bold text-[#A01C1C] mb-6">Voting Rules</h2>
-      
+
       <div className="space-y-2">
         <label className="text-sm font-bold text-gray-700">Voting Options <span className="text-red-500">*</span></label>
         <div className="border border-gray-200 rounded-lg p-4 bg-white space-y-3">
@@ -357,44 +352,40 @@ function Step3VotingRules({
           </label>
         </div>
       </div>
-  
+
       <div className="grid grid-cols-2 gap-6">
         <div className="space-y-1.5">
           <label className="text-sm font-bold text-gray-700">Voting Start Date <span className="text-red-500">*</span></label>
-          <div className="relative">
-            <Input
-              type="date"
-              value={form.votingStartDate}
-              min={form.startDate}
-              onChange={(e) => update("votingStartDate", e.target.value)}
-              className="h-11 bg-white pl-4 border-gray-200 focus-visible:ring-[#A01C1C]"
-            />
-          </div>
+          <Input
+            type="date"
+            value={form.votingStartDate}
+            min={new Date().toISOString().split("T")[0]}
+            onChange={(e) => update("votingStartDate", e.target.value)}
+            className="h-11 bg-white focus-visible:ring-[#A01C1C]"
+          />
         </div>
         <div className="space-y-1.5">
           <label className="text-sm font-bold text-gray-700">Voting End Date <span className="text-red-500">*</span></label>
-          <div className="relative">
-            <Input
-              type="date"
-              value={form.votingEndDate}
-              min={form.votingStartDate || form.startDate}
-              max={form.endDate}
-              onChange={(e) => update("votingEndDate", e.target.value)}
-              className="h-11 bg-white pl-4 border-gray-200 focus-visible:ring-[#A01C1C]"
-            />
-          </div>
+          <Input
+            type="date"
+            value={form.votingEndDate}
+            min={form.votingStartDate || form.startDate}
+            max={form.endDate}
+            onChange={(e) => update("votingEndDate", e.target.value)}
+            className="h-11 bg-white pl-4 border-gray-200 focus-visible:ring-[#A01C1C]"
+          />
         </div>
       </div>
     </div>
   );
 }
 
-// --- STEP 4: Winner Logic ---
+// ─── STEP 4 ───────────────────────────────────────────────────
 function Step4WinnerLogic() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
       <h2 className="text-xl font-bold text-[#A01C1C] mb-6">Winner Logic</h2>
-      
+
       <div className="bg-[#EF44440D] border border-blue-100 rounded-lg p-6">
         <h4 className="text-sm font-bold text-blue-800 mb-2">Automatic Winner Selection</h4>
         <p className="text-xs text-blue-600 leading-relaxed">
@@ -420,7 +411,7 @@ function Step4WinnerLogic() {
   );
 }
 
-// --- STEP 5: Review & Publish ---
+// ─── STEP 5 ───────────────────────────────────────────────────
 function Step5Review({
   form, goToStep,
 }: {
@@ -428,8 +419,8 @@ function Step5Review({
   goToStep: (step: number) => void;
 }) {
   const submissionType = [
-    form.requireImage     && "Image",
-    form.requireText      && "Text",
+    form.requireImage && "Image",
+    form.requireText && "Text",
     form.requireTextImage && "Text + Image",
   ].filter(Boolean).join(", ") || "—";
 
@@ -449,10 +440,9 @@ function Step5Review({
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
       <h2 className="text-xl font-bold text-[#A01C1C] mb-6">Review & Publish (Content Submission + Voting Contest)</h2>
-      
+
       <div className="space-y-6">
-        
-        {/* Basic Info */}
+
         <div className="pb-2">
           <SectionHeader title="Basic Information" step={1} />
           <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-2">
@@ -465,7 +455,6 @@ function Step5Review({
           </div>
         </div>
 
-        {/* Submission Rules */}
         <div className="pb-2">
           <SectionHeader title="Submission Rules" step={2} />
           <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-2">
@@ -474,7 +463,6 @@ function Step5Review({
           </div>
         </div>
 
-        {/* Voting Rules */}
         <div className="pb-2">
           <SectionHeader title="Voting Rules" step={3} />
           <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-2">
@@ -486,7 +474,6 @@ function Step5Review({
           </div>
         </div>
 
-        {/* Winner Logic */}
         <div className="pb-2">
           <SectionHeader title="Winner Logic" step={4} />
           <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-2">

@@ -65,11 +65,11 @@ export default function PollContestPage() {
 
   return (
     <div className="max-w-5xl mx-auto py-8 pb-20">
-      
+
       {/* ─── STEPPER ─── */}
       <div className="flex items-center justify-between mb-16 relative px-4 md:px-20">
         <div className="absolute left-16 right-16 top-6 -translate-y-1/2 h-[1px] border-t-2 border-dashed border-gray-300 -z-10 hidden md:block" />
-        
+
         {steps.map((step) => (
           <div
             key={step.id}
@@ -81,8 +81,8 @@ export default function PollContestPage() {
               currentStep === step.id
                 ? "bg-[#A01C1C] text-white border-[#A01C1C] ring-4 ring-[#A01C1C]/20"
                 : currentStep > step.id
-                ? "bg-[#A01C1C] text-white border-[#A01C1C]"
-                : "bg-[#E5E7EB] text-gray-500 border-gray-200"
+                  ? "bg-[#A01C1C] text-white border-[#A01C1C]"
+                  : "bg-[#E5E7EB] text-gray-500 border-gray-200"
             )}>
               {String(step.id).padStart(2, '0')}
             </div>
@@ -106,8 +106,8 @@ export default function PollContestPage() {
 
       {/* ─── NAVIGATION FOOTER ─── */}
       <div className="flex justify-between mt-8">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={currentStep === 1 ? () => router.back() : prevStep}
           className="h-12 px-10 border-red-100 text-[#A01C1C] hover:bg-red-50 hover:text-[#A01C1C] font-semibold rounded-lg"
         >
@@ -115,14 +115,14 @@ export default function PollContestPage() {
         </Button>
 
         {currentStep === 4 ? (
-          <Button 
+          <Button
             className="h-12 px-10 bg-[#10B981] hover:bg-[#059669] text-white font-semibold rounded-lg shadow-sm"
             onClick={handlePublish}
           >
             Publish Contest <ArrowRight size={18} className="ml-2" />
           </Button>
         ) : (
-          <Button 
+          <Button
             onClick={nextStep}
             className="h-12 px-10 bg-[#A01C1C] hover:bg-[#851616] text-white font-semibold rounded-lg shadow-sm"
           >
@@ -157,7 +157,7 @@ function Step1PollInfo({
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       <h2 className="text-xl font-bold text-[#A01C1C] mb-6">Poll Information</h2>
-      
+
       <div className="space-y-1.5">
         <label className="text-sm font-bold text-gray-700">Contest Title <span className="text-red-500">*</span></label>
         <Input
@@ -266,7 +266,7 @@ function Step2PollOptions({
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       <h2 className="text-xl font-bold text-[#A01C1C] mb-6">Poll Options</h2>
-      
+
       {form.options.map((option, index) => (
         <div key={index} className="space-y-1.5 relative">
           <label className="text-sm font-bold text-gray-700">
@@ -318,7 +318,7 @@ function Step3PollRules({
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
       <h2 className="text-xl font-bold text-[#A01C1C] mb-6">Poll Rules</h2>
-      
+
       {/* Info Box */}
       <div className="bg-[#EFF6FF] border border-blue-100 rounded-lg p-4">
         <h4 className="text-sm font-bold text-blue-800 mb-1">Voting Rules</h4>
@@ -334,8 +334,9 @@ function Step3PollRules({
             <Input
               type="date"
               value={form.pollStartDate}
+              min={new Date().toISOString().split("T")[0]}
               onChange={(e) => update("pollStartDate", e.target.value)}
-              className="h-11 bg-white pl-4 border-gray-200"
+              className="h-11 bg-white focus-visible:ring-[#A01C1C]"
             />
           </div>
         </div>
@@ -345,7 +346,7 @@ function Step3PollRules({
             <Input
               type="date"
               value={form.pollEndDate}
-              min={form.pollStartDate}
+              min={form.pollStartDate || new Date().toISOString().split("T")[0]}
               onChange={(e) => update("pollEndDate", e.target.value)}
               className="h-11 bg-white pl-4 border-gray-200"
             />
@@ -391,7 +392,7 @@ function Step4Review({
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
       <h2 className="text-xl font-bold text-[#A01C1C] mb-6">Review & Publish (Poll)</h2>
-      
+
       <div className="space-y-6">
 
         {/* Poll Information */}

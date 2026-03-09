@@ -105,7 +105,6 @@ export default function SubmissionsContestDetailPage() {
 
   return (
     <div className="min-h-screen bg-white p-8">
-      {/* Back */}
       <button
         onClick={() => router.push("/admin/contests")}
         className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-6 transition-colors"
@@ -113,7 +112,6 @@ export default function SubmissionsContestDetailPage() {
         <ArrowLeft className="w-4 h-4" /> Back to My Contests
       </button>
 
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-3 mb-2 flex-wrap">
@@ -128,7 +126,6 @@ export default function SubmissionsContestDetailPage() {
         </button>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-2 mb-8 flex-wrap">
         {tabs.map(({ key, label }) => (
           <button
@@ -165,7 +162,6 @@ function OverviewTab() {
 
   return (
     <div className="space-y-6">
-      {/* Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {stats.map(({ label, value, icon: Icon, iconBg, iconColor }) => (
           <div key={label} className="border border-gray-100 rounded-2xl p-6 shadow-sm">
@@ -180,7 +176,6 @@ function OverviewTab() {
         ))}
       </div>
 
-      {/* Contest Information */}
       <div className="border border-gray-100 rounded-2xl p-6 shadow-sm">
         <h3 className="text-base font-bold text-gray-900 mb-4">Contest Information</h3>
         <div className="space-y-3">
@@ -197,7 +192,6 @@ function OverviewTab() {
         </div>
       </div>
 
-      {/* Timeline */}
       <div className="border border-gray-100 rounded-2xl p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-4">
           <Clock className="w-4 h-4 text-gray-500" />
@@ -223,7 +217,6 @@ function OverviewTab() {
         </div>
       </div>
 
-      {/* Submission Settings */}
       <div className="border border-gray-100 rounded-2xl p-6 shadow-sm">
         <h3 className="text-base font-bold text-gray-900 mb-4">Submission Settings</h3>
         <div className="grid grid-cols-2 gap-4">
@@ -423,25 +416,53 @@ function SubmissionsTab() {
   const [search, setSearch]             = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [submissions, setSubmissions]   = useState<Submission[]>(SUBMISSIONS);
-  const [modalItem, setModalItem]       = useState<Submission | null>(null);
+  const [selectedItem, setSelectedItem] = useState<Submission | null>(null);
+  const [activeModal, setActiveModal]   = useState<"detail" | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
 
   const statusFilters = ["All", "Approved", "Pending", "Rejected"];
 
   const filtered = submissions.filter((s) => {
-    const matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) || s.email.toLowerCase().includes(search.toLowerCase());
+    const matchSearch =
+      s.name.toLowerCase().includes(search.toLowerCase()) ||
+      s.email.toLowerCase().includes(search.toLowerCase());
     const matchStatus = statusFilter === "All" || s.status === statusFilter;
     return matchSearch && matchStatus;
   });
 
-  const handleApprove = (id: number) => { setSubmissions((prev) => prev.map((s) => s.id === id ? { ...s, status: "Approved" } : s)); setModalItem(null); };
-  const handleReject  = (id: number) => { setSubmissions((prev) => prev.map((s) => s.id === id ? { ...s, status: "Rejected" } : s)); setModalItem(null); };
+  const openDetail = (s: Submission) => {
+    setSelectedItem(s);
+    setRejectReason("");
+    setActiveModal("detail");
+  };
+
+  const closeAll = () => {
+    setActiveModal(null);
+    setSelectedItem(null);
+    setRejectReason("");
+  };
+
+  const handleApprove = (id: number) => {
+    setSubmissions((prev) =>
+      prev.map((s) => s.id === id ? { ...s, status: "Approved" as const } : s)
+    );
+    closeAll();
+  };
+
+  const handleRejectConfirm = () => {
+    if (!selectedItem || !rejectReason.trim()) return;
+    setSubmissions((prev) =>
+      prev.map((s) => s.id === selectedItem.id ? { ...s, status: "Rejected" as const } : s)
+    );
+    closeAll();
+  };
 
   return (
     <>
       <div className="border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 gap-3">
           <div>
-            <h3 className="text-base font-bold text-gray-900">Participants</h3>
+            <h3 className="text-base font-bold text-gray-900">Submissions</h3>
             <p className="text-xs text-gray-400 mt-0.5">Total Number: {submissions.length}</p>
           </div>
           <button className="flex items-center gap-2 bg-[#A01C1C] hover:bg-[#851717] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm">
@@ -466,7 +487,7 @@ function SubmissionsTab() {
             className="h-10 px-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-[#A01C1C]/20 focus:border-[#A01C1C]"
           >
             {statusFilters.map((f) => (
-              <option key={f} value={f}>{f === "All" ? "All Approved" : f}</option>
+              <option key={f} value={f}>{f}</option>
             ))}
           </select>
         </div>
@@ -504,15 +525,24 @@ function SubmissionsTab() {
                   <td className="px-6 py-4 text-gray-700 font-semibold">{s.votes}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <button onClick={() => setModalItem(s)} className="w-7 h-7 rounded-full flex items-center justify-center text-blue-500 hover:bg-blue-50">
+                      <button
+                        onClick={() => openDetail(s)}
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-blue-500 hover:bg-blue-50"
+                      >
                         <Eye className="w-4 h-4" />
                       </button>
                       {s.status === "Pending" && (
                         <>
-                          <button onClick={() => handleApprove(s.id)} className="w-7 h-7 rounded-full flex items-center justify-center text-green-500 hover:bg-green-50">
+                          <button
+                            onClick={() => handleApprove(s.id)}
+                            className="w-7 h-7 rounded-full flex items-center justify-center text-green-500 hover:bg-green-50"
+                          >
                             <Check className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleReject(s.id)} className="w-7 h-7 rounded-full flex items-center justify-center text-red-500 hover:bg-red-50">
+                          <button
+                            onClick={() => openDetail(s)}
+                            className="w-7 h-7 rounded-full flex items-center justify-center text-red-500 hover:bg-red-50"
+                          >
                             <X className="w-4 h-4" />
                           </button>
                         </>
@@ -526,44 +556,116 @@ function SubmissionsTab() {
         </div>
       </div>
 
-      {/* Submission Detail Modal */}
-      {modalItem && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setModalItem(null)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100">
+      {/* ── Detail Modal with inline Reject Reason ── */}
+      {activeModal === "detail" && selectedItem && (
+        <div
+          className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4"
+          onClick={closeAll}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
               <h3 className="text-base font-bold text-gray-900">Submission Details</h3>
-              <button onClick={() => setModalItem(null)} className="w-7 h-7 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100">
+              <button
+                onClick={closeAll}
+                className="w-7 h-7 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="p-6">
-              <div className="w-full h-52 rounded-xl overflow-hidden mb-5">
-                <Image src={modalItem.image} alt="submission" width={500} height={220} className="w-full h-full object-cover" />
+
+            <div className="p-6 space-y-4">
+              {/* Image */}
+              <div className="w-full h-52 rounded-xl overflow-hidden">
+                <Image
+                  src={selectedItem.image}
+                  alt="submission"
+                  width={500}
+                  height={220}
+                  className="w-full h-full object-cover"
+                />
               </div>
+
+              {/* Info */}
               <div className="space-y-3">
                 <div>
                   <p className="text-xs text-gray-400 mb-0.5">Submitted by</p>
-                  <p className="text-sm font-medium text-gray-900">{modalItem.name}</p>
+                  <p className="text-sm font-semibold text-gray-900">{selectedItem.name}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 mb-0.5">Content</p>
-                  <p className="text-sm text-gray-700">{modalItem.content}</p>
+                  <p className="text-sm text-gray-700">{selectedItem.content}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 mb-0.5">Submission Date</p>
-                  <p className="text-sm text-gray-700">{modalItem.date}</p>
+                  <p className="text-sm text-gray-700">{selectedItem.date}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 mb-0.5">Total Votes</p>
-                  <p className="text-sm font-bold text-gray-900">{modalItem.votes}</p>
+                  <p className="text-sm font-bold text-gray-900">{selectedItem.votes}</p>
                 </div>
               </div>
+
+              <div className="border border-gray-100 rounded-xl p-4 bg-gray-50/70 space-y-3">
+                <p className="text-xs text-gray-500 font-medium">
+                  Rejection reason{" "}
+                  <span className="text-gray-400">(required to reject)</span>
+                </p>
+
+                {/* Quick presets */}
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "Does not meet guidelines",
+                    "Low image quality",
+                    "Off-topic content",
+                    "Duplicate submission",
+                  ].map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setRejectReason(rejectReason === p ? "" : p)}
+                      className={cn(
+                        "px-3 py-1.5 rounded-lg border text-xs font-medium transition-all",
+                        rejectReason === p
+                          ? "bg-[#A01C1C] border-[#A01C1C] text-white"
+                          : "border-gray-200 bg-white text-gray-600 hover:border-[#A01C1C] hover:text-[#A01C1C]"
+                      )}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Textarea */}
+                <textarea
+                  rows={3}
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value.slice(0, 300))}
+                  placeholder="Or write a custom reason for rejection..."
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-700 placeholder:text-gray-400 outline-none focus:ring-2 focus:ring-[#A01C1C]/20 focus:border-[#A01C1C] resize-none transition"
+                />
+                <p className="text-[11px] text-gray-400 text-right -mt-1">
+                  {rejectReason.length}/300
+                </p>
+              </div>
             </div>
+
+            {/* Buttons */}
             <div className="grid grid-cols-2 gap-3 px-6 pb-6">
-              <button onClick={() => handleApprove(modalItem.id)} className="flex items-center justify-center gap-2 h-11 rounded-xl bg-green-500 hover:bg-green-600 text-white font-semibold text-sm">
+              <button
+                disabled={!!rejectReason.trim()}
+                onClick={() => handleApprove(selectedItem.id)}
+                className="flex items-center justify-center gap-2 h-11 rounded-xl bg-green-500 hover:bg-green-600 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold text-sm transition-colors"
+              >
                 <Check className="w-4 h-4" /> Approve
               </button>
-              <button onClick={() => handleReject(modalItem.id)} className="flex items-center justify-center gap-2 h-11 rounded-xl bg-[#A01C1C] hover:bg-[#851717] text-white font-semibold text-sm">
+              <button
+                disabled={!rejectReason.trim()}
+                onClick={handleRejectConfirm}
+                className="flex items-center justify-center gap-2 h-11 rounded-xl bg-[#A01C1C] hover:bg-[#851717] disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold text-sm transition-colors"
+              >
                 <X className="w-4 h-4" /> Reject
               </button>
             </div>
@@ -579,14 +681,13 @@ function VotingResultsTab() {
   const totalVotes = LEADERBOARD.reduce((sum, e) => sum + e.votes, 0);
 
   const votingStats = [
-    { label: "Total Votes",         value: "5,420", icon: TrendingUp,  iconBg: "bg-blue-50",   iconColor: "text-blue-500"   },
-    { label: "Submissions",         value: "20",    icon: FileText,    iconBg: "bg-green-50",  iconColor: "text-green-500"  },
-    { label: "Avg. Votes Per Entry", value: "31",   icon: BarChart2,   iconBg: "bg-purple-50", iconColor: "text-purple-500" },
+    { label: "Total Votes",          value: "5,420", icon: TrendingUp, iconBg: "bg-blue-50",   iconColor: "text-blue-500"   },
+    { label: "Submissions",          value: "20",    icon: FileText,   iconBg: "bg-green-50",  iconColor: "text-green-500"  },
+    { label: "Avg. Votes Per Entry", value: "31",    icon: BarChart2,  iconBg: "bg-purple-50", iconColor: "text-purple-500" },
   ];
 
   return (
     <div className="space-y-6">
-      {/* Header row */}
       <div className="flex justify-between items-start">
         <div>
           <h3 className="text-base font-bold text-gray-900">Voting Results</h3>
@@ -597,7 +698,6 @@ function VotingResultsTab() {
         </button>
       </div>
 
-      {/* Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {votingStats.map(({ label, value, icon: Icon, iconBg, iconColor }) => (
           <div key={label} className="border border-gray-100 rounded-2xl p-6 shadow-sm">
@@ -612,7 +712,6 @@ function VotingResultsTab() {
         ))}
       </div>
 
-      {/* Leaderboard */}
       <div className="border border-gray-100 rounded-2xl p-6 shadow-sm">
         <h3 className="text-base font-bold text-gray-900 mb-5">Leaderboard</h3>
         <div className="space-y-4">
@@ -621,7 +720,7 @@ function VotingResultsTab() {
             return (
               <div key={entry.id} className="flex items-center gap-4">
                 <div className="w-8 text-center text-sm font-bold text-gray-500 shrink-0">
-                  {typeof rankEmoji(entry.rank) === "string" && entry.rank <= 3
+                  {entry.rank <= 3
                     ? <span className="text-lg">{rankEmoji(entry.rank)}</span>
                     : <span>{entry.rank}</span>
                   }
@@ -649,7 +748,6 @@ function VotingResultsTab() {
         </div>
       </div>
 
-      {/* Live banner */}
       <div className="bg-blue-50 border border-blue-100 rounded-xl px-5 py-3">
         <p className="text-xs text-blue-600">
           <span className="font-bold">Live Results:</span> These results are updated in real-time as participants vote. Final results will be locked when the contest ends.
@@ -661,13 +759,13 @@ function VotingResultsTab() {
 
 /* ─── WINNER MANAGEMENT TAB ────────────────────────────────── */
 function WinnerTab() {
-  const [published, setPublished]   = useState(false);
+  const [published, setPublished]     = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
   const votingStats = [
-    { label: "Total Votes",         value: "5,420", icon: TrendingUp,  iconBg: "bg-blue-50",   iconColor: "text-blue-500"   },
-    { label: "Submissions",         value: "20",    icon: FileText,    iconBg: "bg-green-50",  iconColor: "text-green-500"  },
-    { label: "Avg. Votes Per Entry", value: "31",   icon: BarChart2,   iconBg: "bg-purple-50", iconColor: "text-purple-500" },
+    { label: "Total Votes",          value: "5,420", icon: TrendingUp, iconBg: "bg-blue-50",   iconColor: "text-blue-500"   },
+    { label: "Submissions",          value: "20",    icon: FileText,   iconBg: "bg-green-50",  iconColor: "text-green-500"  },
+    { label: "Avg. Votes Per Entry", value: "31",    icon: BarChart2,  iconBg: "bg-purple-50", iconColor: "text-purple-500" },
   ];
 
   const totalVotes = LEADERBOARD.reduce((sum, e) => sum + e.votes, 0);
@@ -676,7 +774,6 @@ function WinnerTab() {
   return (
     <>
       <div className="space-y-6">
-        {/* Header row */}
         <div className="flex justify-between items-start">
           <div>
             <h3 className="text-base font-bold text-gray-900">Winner Management</h3>
@@ -688,7 +785,6 @@ function WinnerTab() {
         </div>
 
         {published ? (
-          /* ── Published state ── */
           <div className="border border-gray-100 rounded-2xl p-6 shadow-sm">
             <div className="flex items-start gap-3 bg-green-50 border border-green-200 rounded-xl p-5">
               <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
@@ -700,7 +796,6 @@ function WinnerTab() {
           </div>
         ) : (
           <>
-            {/* Stat Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {votingStats.map(({ label, value, icon: Icon, iconBg, iconColor }) => (
                 <div key={label} className="border border-gray-100 rounded-2xl p-6 shadow-sm">
@@ -715,7 +810,6 @@ function WinnerTab() {
               ))}
             </div>
 
-            {/* Leaderboard */}
             <div className="border border-gray-100 rounded-2xl p-6 shadow-sm">
               <h3 className="text-base font-bold text-gray-900 mb-5">Leaderboard</h3>
               <div className="space-y-3">
@@ -723,10 +817,13 @@ function WinnerTab() {
                   const pct = Math.round((entry.votes / totalVotes) * 100);
                   const isWinner = entry.id === winner.id;
                   return (
-                    <div key={entry.id} className={cn(
-                      "flex items-center gap-4 p-3 rounded-xl",
-                      isWinner ? "bg-yellow-50 border border-yellow-100" : ""
-                    )}>
+                    <div
+                      key={entry.id}
+                      className={cn(
+                        "flex items-center gap-4 p-3 rounded-xl",
+                        isWinner ? "bg-yellow-50 border border-yellow-100" : ""
+                      )}
+                    >
                       <div className="w-8 text-center text-lg shrink-0">
                         {rankEmoji(entry.rank)}
                       </div>
@@ -749,7 +846,9 @@ function WinnerTab() {
                           <p className="text-[11px] text-gray-400">votes</p>
                         </div>
                         {isWinner && (
-                          <span className="px-2.5 py-1 rounded-full bg-yellow-400 text-white text-[11px] font-bold">Winner</span>
+                          <span className="px-2.5 py-1 rounded-full bg-yellow-400 text-white text-[11px] font-bold">
+                            Winner
+                          </span>
                         )}
                       </div>
                     </div>
@@ -758,7 +857,6 @@ function WinnerTab() {
               </div>
             </div>
 
-            {/* Confirm Button */}
             <button
               onClick={() => setShowConfirm(true)}
               className="w-full flex items-center justify-center gap-2 h-12 rounded-xl bg-green-500 hover:bg-green-600 text-white font-semibold text-sm shadow-sm transition-colors"
@@ -771,15 +869,23 @@ function WinnerTab() {
 
       {/* Confirm Modal */}
       {showConfirm && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setShowConfirm(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowConfirm(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center">
                 <Trophy className="w-5 h-5 text-green-500" />
               </div>
               <h3 className="text-base font-bold text-gray-900">Confirm & Publish Results</h3>
             </div>
-            <p className="text-sm text-gray-600 mb-4">Are you sure you want to publish the results? This action will:</p>
+            <p className="text-sm text-gray-600 mb-4">
+              Are you sure you want to publish the results? This action will:
+            </p>
             <ul className="space-y-1.5 mb-6">
               {[
                 "Mark the contest as completed",

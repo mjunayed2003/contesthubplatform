@@ -85,9 +85,9 @@ export default function GiveawayFormPage() {
           >
             <div className={cn(
               "w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all duration-200",
-              currentStep > step.id  && "bg-[#A01C1C] text-white border-[#A01C1C]",
+              currentStep > step.id && "bg-[#A01C1C] text-white border-[#A01C1C]",
               currentStep === step.id && "bg-[#A01C1C] text-white border-[#A01C1C] ring-4 ring-[#A01C1C]/20",
-              currentStep < step.id  && "bg-white text-gray-400 border-gray-200",
+              currentStep < step.id && "bg-white text-gray-400 border-gray-200",
             )}>
               {String(step.id).padStart(2, "0")}
             </div>
@@ -242,6 +242,7 @@ function Step1BasicInfo({
             <Input
               type="date"
               value={form.startDate}
+              min={new Date().toISOString().split("T")[0]}
               onChange={(e) => update("startDate", e.target.value)}
               className="h-11 bg-white focus-visible:ring-[#A01C1C]"
             />
@@ -255,7 +256,7 @@ function Step1BasicInfo({
             <Input
               type="date"
               value={form.endDate}
-              min={form.startDate}
+              min={form.startDate || new Date().toISOString().split("T")[0]}
               onChange={(e) => update("endDate", e.target.value)}
               className="h-11 bg-white focus-visible:ring-[#A01C1C]"
             />
@@ -444,33 +445,35 @@ function Step4Review({
       title: "Basic Information",
       step: 1,
       rows: [
-        { label: "Title",       value: form.title       || "—" },
+        { label: "Title", value: form.title || "—" },
         { label: "Description", value: form.description || "—" },
-        { label: "Location",    value: form.location    || "—" },
-        { label: "Start Date",  value: form.startDate   || "—" },
-        { label: "End Date",    value: form.endDate     || "—" },
-        { label: "Banner",      value: form.banner?.name || "—" },
+        { label: "Location", value: form.location || "—" },
+        { label: "Start Date", value: form.startDate || "—" },
+        { label: "End Date", value: form.endDate || "—" },
+        { label: "Banner", value: form.banner?.name || "—" },
       ],
     },
     {
       title: "Participation Requirements",
       step: 2,
       rows: [
-        { label: "Task Instructions",  value: form.taskInstructions || "—"  },
-        { label: "Screenshot required",value: form.requireScreenshot ? "Yes" : "No" },
-        { label: "Text required",      value: form.requireText       ? "Yes" : "No" },
-        { label: "Max submissions",    value: form.maxSubmissions   || "—"  },
+        { label: "Task Instructions", value: form.taskInstructions || "—" },
+        { label: "Screenshot required", value: form.requireScreenshot ? "Yes" : "No" },
+        { label: "Text required", value: form.requireText ? "Yes" : "No" },
+        { label: "Max submissions", value: form.maxSubmissions || "—" },
       ],
     },
     {
       title: "Winner Settings",
       step: 3,
       rows: [
-        { label: "Number of winners",   value: form.numberOfWinners || "—" },
-        { label: "Selection method",    value: "Manual Selection"          },
-        { label: "Announcement",        value: form.announcementSchedule === "immediately"
+        { label: "Number of winners", value: form.numberOfWinners || "—" },
+        { label: "Selection method", value: "Manual Selection" },
+        {
+          label: "Announcement", value: form.announcementSchedule === "immediately"
             ? "Immediately after closing"
-            : `Scheduled — ${form.announcementDate || "—"}` },
+            : `Scheduled — ${form.announcementDate || "—"}`
+        },
       ],
     },
   ];

@@ -46,14 +46,14 @@ interface Submission {
 const SUBMISSIONS: Submission[] = [
   { id: 1,  userName: "Sarah Johnson",  userEmail: "sarah.j@email.com",  contestTitle: "Best Travel Photo Contest",    contestType: "Submissions", image: "/images/contest2.jpg", content: "Beautiful sunset photograph from my recent beach trip",       submittedAt: "2/5/2026, 10:25 PM", status: "Approved", votes: 42 },
   { id: 2,  userName: "Michael Chen",   userEmail: "m.chen@email.com",   contestTitle: "Best Travel Photo Contest",    contestType: "Submissions", image: "/images/contest3.jpg", content: "Mountain landscape during golden hour",                       submittedAt: "2/5/2026, 11:10 PM", status: "Pending",  votes: 18 },
-  { id: 3,  userName: "Emily Davis",    userEmail: "emily.d@email.com",  contestTitle: "Win a Free Product Bundle",    contestType: "Giveaway",                                  content: "Followed page, liked post and tagged 2 friends",              submittedAt: "2/6/2026, 9:00 AM",  status: "Approved"           },
-  { id: 4,  userName: "James Wilson",   userEmail: "j.wilson@email.com", contestTitle: "Community Choice Awards",      contestType: "Poll",                                       content: "Voted for: Dark Mode",                                         submittedAt: "2/6/2026, 9:45 AM",  status: "Approved"           },
+  { id: 3,  userName: "Emily Davis",    userEmail: "emily.d@email.com",  contestTitle: "Win a Free Product Bundle",    contestType: "Giveaway",                                   content: "Followed page, liked post and tagged 2 friends",              submittedAt: "2/6/2026, 9:00 AM",  status: "Approved"           },
+  { id: 4,  userName: "James Wilson",   userEmail: "j.wilson@email.com", contestTitle: "Community Choice Awards",      contestType: "Poll",                                        content: "Voted for: Dark Mode",                                        submittedAt: "2/6/2026, 9:45 AM",  status: "Approved"           },
   { id: 5,  userName: "Aisha Patel",    userEmail: "aisha.p@email.com",  contestTitle: "Best Travel Photo Contest",    contestType: "Submissions", image: "/images/contest1.jpg", content: "Colorful street market in Bangkok",                           submittedAt: "2/6/2026, 10:20 AM", status: "Rejected", votes: 5  },
-  { id: 6,  userName: "Lucas Martin",   userEmail: "lucas.m@email.com",  contestTitle: "Community Choice Awards",      contestType: "Poll",                                       content: "Voted for: Mobile App",                                        submittedAt: "2/6/2026, 11:00 AM", status: "Pending"            },
-  { id: 7,  userName: "Priya Sharma",   userEmail: "priya.s@email.com",  contestTitle: "Win a Free Product Bundle",    contestType: "Giveaway",                                  content: "Completed all tasks — followed, liked and tagged friends",     submittedAt: "2/6/2026, 12:15 PM", status: "Pending"            },
+  { id: 6,  userName: "Lucas Martin",   userEmail: "lucas.m@email.com",  contestTitle: "Community Choice Awards",      contestType: "Poll",                                        content: "Voted for: Mobile App",                                       submittedAt: "2/6/2026, 11:00 AM", status: "Pending"            },
+  { id: 7,  userName: "Priya Sharma",   userEmail: "priya.s@email.com",  contestTitle: "Win a Free Product Bundle",    contestType: "Giveaway",                                   content: "Completed all tasks — followed, liked and tagged friends",    submittedAt: "2/6/2026, 12:15 PM", status: "Pending"            },
   { id: 8,  userName: "Omar Hassan",    userEmail: "omar.h@email.com",   contestTitle: "Best Travel Photo Contest",    contestType: "Submissions", image: "/images/contest2.jpg", content: "Sunset over the Sahara desert",                               submittedAt: "2/6/2026, 1:30 PM",  status: "Approved", votes: 31 },
-  { id: 9,  userName: "Chloe Nguyen",   userEmail: "chloe.n@email.com",  contestTitle: "Community Choice Awards",      contestType: "Poll",                                       content: "Voted for: API Integration",                                   submittedAt: "2/6/2026, 2:00 PM",  status: "Approved"           },
-  { id: 10, userName: "Daniel Brown",   userEmail: "d.brown@email.com",  contestTitle: "Win a Premium Gaming Setup",   contestType: "Giveaway",                                  content: "Followed page and tagged 2 friends in the comments",           submittedAt: "2/6/2026, 3:10 PM",  status: "Rejected"           },
+  { id: 9,  userName: "Chloe Nguyen",   userEmail: "chloe.n@email.com",  contestTitle: "Community Choice Awards",      contestType: "Poll",                                        content: "Voted for: API Integration",                                  submittedAt: "2/6/2026, 2:00 PM",  status: "Approved"           },
+  { id: 10, userName: "Daniel Brown",   userEmail: "d.brown@email.com",  contestTitle: "Win a Premium Gaming Setup",   contestType: "Giveaway",                                   content: "Followed page and tagged 2 friends in the comments",          submittedAt: "2/6/2026, 3:10 PM",  status: "Rejected"           },
 ];
 
 // ─── STYLE MAPS ────────────────────────────────────────────────
@@ -70,19 +70,29 @@ const typeStyle: Record<ContestType, string> = {
 };
 
 const typeIcon: Record<ContestType, React.ReactNode> = {
-  Submissions: <ImageIcon  className="w-3 h-3" />,
+  Submissions: <ImageIcon    className="w-3 h-3" />,
   Giveaway:    <CheckCircle2 className="w-3 h-3" />,
-  Poll:        <BarChart2  className="w-3 h-3" />,
+  Poll:        <BarChart2    className="w-3 h-3" />,
 };
+
+const REJECT_PRESETS = [
+  "Does not meet guidelines",
+  "Low image quality",
+  "Off-topic content",
+  "Duplicate submission",
+];
 
 // ─── MAIN PAGE ─────────────────────────────────────────────────
 export default function AdminSubmissionsPage() {
-  const [submissions, setSubmissions] = useState<Submission[]>(SUBMISSIONS);
-  const [search, setSearch]           = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("All");
-  const [typeFilter, setTypeFilter]     = useState<string>("All");
+  const [submissions, setSubmissions]     = useState<Submission[]>(SUBMISSIONS);
+  const [search, setSearch]               = useState("");
+  const [statusFilter, setStatusFilter]   = useState<string>("All");
+  const [typeFilter, setTypeFilter]       = useState<string>("All");
   const [contestFilter, setContestFilter] = useState<string>("All");
+
+  // Modal state
   const [modalItem, setModalItem]       = useState<Submission | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
 
   // ── derived ──
   const contests = Array.from(new Set(SUBMISSIONS.map((s) => s.contestTitle)));
@@ -93,9 +103,9 @@ export default function AdminSubmissionsPage() {
       s.userName.toLowerCase().includes(q) ||
       s.userEmail.toLowerCase().includes(q) ||
       s.contestTitle.toLowerCase().includes(q);
-    const matchStatus  = statusFilter  === "All" || s.status       === statusFilter;
-    const matchType    = typeFilter    === "All" || s.contestType   === typeFilter;
-    const matchContest = contestFilter === "All" || s.contestTitle  === contestFilter;
+    const matchStatus  = statusFilter  === "All" || s.status      === statusFilter;
+    const matchType    = typeFilter    === "All" || s.contestType  === typeFilter;
+    const matchContest = contestFilter === "All" || s.contestTitle === contestFilter;
     return matchSearch && matchStatus && matchType && matchContest;
   });
 
@@ -105,14 +115,39 @@ export default function AdminSubmissionsPage() {
   const approved = submissions.filter((s) => s.status === "Approved").length;
   const rejected = submissions.filter((s) => s.status === "Rejected").length;
 
-  // ── actions ──
-  const updateStatus = (id: number, status: SubmissionStatus) => {
+  // ── open / close modal ──
+  const openModal = (s: Submission) => {
+    setModalItem(s);
+    setRejectReason("");
+  };
+
+  const closeModal = () => {
+    setModalItem(null);
+    setRejectReason("");
+  };
+
+  // ── approve (from modal) ──
+  const handleApprove = (id: number) => {
     setSubmissions((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, status } : s))
+      prev.map((s) => s.id === id ? { ...s, status: "Approved" as const } : s)
     );
-    if (modalItem?.id === id) {
-      setModalItem((prev) => prev ? { ...prev, status } : null);
-    }
+    closeModal();
+  };
+
+  // ── reject with reason (from modal) ──
+  const handleRejectConfirm = () => {
+    if (!modalItem || !rejectReason.trim()) return;
+    setSubmissions((prev) =>
+      prev.map((s) => s.id === modalItem.id ? { ...s, status: "Rejected" as const } : s)
+    );
+    closeModal();
+  };
+
+  // ── quick approve from table row (no reason needed) ──
+  const quickApprove = (id: number) => {
+    setSubmissions((prev) =>
+      prev.map((s) => s.id === id ? { ...s, status: "Approved" as const } : s)
+    );
   };
 
   return (
@@ -126,9 +161,7 @@ export default function AdminSubmissionsPage() {
             Review and manage all contest submissions
           </p>
         </div>
-        <Button
-          className="bg-[#A01C1C] hover:bg-[#851717] text-white gap-2 shadow-sm"
-        >
+        <Button className="bg-[#A01C1C] hover:bg-[#851717] text-white gap-2 shadow-sm">
           <Download className="w-4 h-4" /> Export All
         </Button>
       </div>
@@ -136,10 +169,10 @@ export default function AdminSubmissionsPage() {
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Total",    value: total,    icon: FileText,     bg: "bg-gray-50",   color: "text-gray-500",   border: "border-gray-100" },
+          { label: "Total",    value: total,    icon: FileText,     bg: "bg-gray-50",   color: "text-gray-500",   border: "border-gray-100"   },
           { label: "Pending",  value: pending,  icon: Clock,        bg: "bg-yellow-50", color: "text-yellow-500", border: "border-yellow-100" },
-          { label: "Approved", value: approved, icon: CheckCircle2, bg: "bg-green-50",  color: "text-green-500",  border: "border-green-100" },
-          { label: "Rejected", value: rejected, icon: XCircle,      bg: "bg-red-50",    color: "text-red-500",    border: "border-red-100" },
+          { label: "Approved", value: approved, icon: CheckCircle2, bg: "bg-green-50",  color: "text-green-500",  border: "border-green-100"  },
+          { label: "Rejected", value: rejected, icon: XCircle,      bg: "bg-red-50",    color: "text-red-500",    border: "border-red-100"    },
         ].map(({ label, value, icon: Icon, bg, color, border }) => (
           <Card key={label} className={`border ${border} shadow-sm`}>
             <CardContent className="pt-5 pb-5">
@@ -161,7 +194,6 @@ export default function AdminSubmissionsPage() {
       <Card className="border-gray-100 shadow-sm mb-6">
         <CardContent className="pt-4 pb-4">
           <div className="flex flex-col sm:flex-row gap-3">
-            {/* Search */}
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               <Input
@@ -172,7 +204,6 @@ export default function AdminSubmissionsPage() {
               />
             </div>
 
-            {/* Status filter */}
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-full sm:w-[140px] h-10 bg-gray-50 border-gray-200 text-sm">
                 <Filter className="w-3.5 h-3.5 text-gray-400 mr-1" />
@@ -185,7 +216,6 @@ export default function AdminSubmissionsPage() {
               </SelectContent>
             </Select>
 
-            {/* Type filter */}
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="w-full sm:w-[150px] h-10 bg-gray-50 border-gray-200 text-sm">
                 <SelectValue placeholder="Type" />
@@ -197,7 +227,6 @@ export default function AdminSubmissionsPage() {
               </SelectContent>
             </Select>
 
-            {/* Contest filter */}
             <Select value={contestFilter} onValueChange={setContestFilter}>
               <SelectTrigger className="w-full sm:w-[200px] h-10 bg-gray-50 border-gray-200 text-sm">
                 <SelectValue placeholder="Contest" />
@@ -218,9 +247,7 @@ export default function AdminSubmissionsPage() {
         <CardHeader className="pb-0 pt-5 px-6">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-sm font-bold text-gray-900">
-                All Submissions
-              </CardTitle>
+              <CardTitle className="text-sm font-bold text-gray-900">All Submissions</CardTitle>
               <CardDescription className="text-xs mt-0.5">
                 Showing {filtered.length} of {total} submissions
               </CardDescription>
@@ -233,10 +260,7 @@ export default function AdminSubmissionsPage() {
             <TableHeader>
               <TableRow className="bg-gray-50/60 hover:bg-gray-50/60 border-gray-100">
                 {["User", "Contest", "Preview", "Submitted At", "Status", "Actions"].map((h) => (
-                  <TableHead
-                    key={h}
-                    className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-6"
-                  >
+                  <TableHead key={h} className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-6">
                     {h}
                   </TableHead>
                 ))}
@@ -261,16 +285,8 @@ export default function AdminSubmissionsPage() {
 
                     {/* Contest */}
                     <TableCell className="px-6 py-4">
-                      <p className="text-xs font-medium text-gray-700 max-w-[160px] truncate">
-                        {s.contestTitle}
-                      </p>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "mt-1 text-[10px] font-semibold gap-1 px-1.5 py-0",
-                          typeStyle[s.contestType]
-                        )}
-                      >
+                      <p className="text-xs font-medium text-gray-700 max-w-[160px] truncate">{s.contestTitle}</p>
+                      <Badge variant="outline" className={cn("mt-1 text-[10px] font-semibold gap-1 px-1.5 py-0", typeStyle[s.contestType])}>
                         {typeIcon[s.contestType]}
                         {s.contestType}
                       </Badge>
@@ -281,22 +297,14 @@ export default function AdminSubmissionsPage() {
                       <div className="flex items-center gap-3">
                         {s.image ? (
                           <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-gray-100">
-                            <Image
-                              src={s.image}
-                              alt="submission"
-                              width={40}
-                              height={40}
-                              className="w-full h-full object-cover"
-                            />
+                            <Image src={s.image} alt="submission" width={40} height={40} className="w-full h-full object-cover" />
                           </div>
                         ) : (
                           <div className="w-10 h-10 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
                             <FileText className="w-4 h-4 text-gray-300" />
                           </div>
                         )}
-                        <span className="text-xs text-gray-500 line-clamp-2 max-w-[160px]">
-                          {s.content}
-                        </span>
+                        <span className="text-xs text-gray-500 line-clamp-2 max-w-[160px]">{s.content}</span>
                       </div>
                     </TableCell>
 
@@ -307,13 +315,7 @@ export default function AdminSubmissionsPage() {
 
                     {/* Status */}
                     <TableCell className="px-6 py-4">
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "text-[11px] font-bold px-2.5 py-1",
-                          statusStyle[s.status]
-                        )}
-                      >
+                      <Badge variant="outline" className={cn("text-[11px] font-bold px-2.5 py-1", statusStyle[s.status])}>
                         {s.status.toUpperCase()}
                       </Badge>
                     </TableCell>
@@ -321,28 +323,28 @@ export default function AdminSubmissionsPage() {
                     {/* Actions */}
                     <TableCell className="px-6 py-4">
                       <div className="flex items-center gap-1.5">
+                        {/* Eye — সব status এ */}
                         <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setModalItem(s)}
+                          variant="ghost" size="icon"
+                          onClick={() => openModal(s)}
                           className="w-8 h-8 rounded-full text-blue-500 hover:bg-blue-50 hover:text-blue-600"
                         >
                           <Eye className="w-4 h-4" />
                         </Button>
+                        {/* Quick buttons — শুধু Pending এ */}
                         {s.status === "Pending" && (
                           <>
                             <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => updateStatus(s.id, "Approved")}
+                              variant="ghost" size="icon"
+                              onClick={() => quickApprove(s.id)}
                               className="w-8 h-8 rounded-full text-green-500 hover:bg-green-50 hover:text-green-600"
                             >
                               <Check className="w-4 h-4" />
                             </Button>
+                            {/* X → modal খুলবে reject reason এর জন্য */}
                             <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => updateStatus(s.id, "Rejected")}
+                              variant="ghost" size="icon"
+                              onClick={() => openModal(s)}
                               className="w-8 h-8 rounded-full text-red-500 hover:bg-red-50 hover:text-red-600"
                             >
                               <X className="w-4 h-4" />
@@ -359,80 +361,111 @@ export default function AdminSubmissionsPage() {
         </div>
       </Card>
 
-      {/* Detail Modal */}
-      <Dialog open={!!modalItem} onOpenChange={() => setModalItem(null)}>
+      {/* ── Detail Modal with inline Reject Reason ── */}
+      <Dialog open={!!modalItem} onOpenChange={closeModal}>
         <DialogContent className="max-w-lg p-0 overflow-hidden">
           <DialogHeader className="px-6 pt-5 pb-4 border-b border-gray-100">
             <DialogTitle className="text-base font-bold">Submission Details</DialogTitle>
           </DialogHeader>
 
           {modalItem && (
-            <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+            <div className="max-h-[75vh] overflow-y-auto">
+              <div className="p-6 space-y-4">
 
-              {/* Image preview */}
-              {modalItem.image && (
-                <div className="w-full h-52 rounded-xl overflow-hidden border border-gray-100">
-                  <Image
-                    src={modalItem.image}
-                    alt="submission"
-                    width={500}
-                    height={220}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-
-              {/* Info rows */}
-              <div className="space-y-3">
-                {[
-                  { label: "Submitted by", value: modalItem.userName    },
-                  { label: "Email",         value: modalItem.userEmail   },
-                  { label: "Contest",       value: modalItem.contestTitle },
-                  { label: "Content",       value: modalItem.content      },
-                  { label: "Submitted At",  value: modalItem.submittedAt  },
-                  ...(modalItem.votes !== undefined
-                    ? [{ label: "Total Votes", value: String(modalItem.votes) }]
-                    : []),
-                ].map(({ label, value }) => (
-                  <div key={label}>
-                    <p className="text-xs text-gray-400 mb-0.5">{label}</p>
-                    <p className="text-sm text-gray-800 font-medium">{value}</p>
+                {/* Image preview */}
+                {modalItem.image && (
+                  <div className="w-full h-52 rounded-xl overflow-hidden border border-gray-100">
+                    <Image src={modalItem.image} alt="submission" width={500} height={220} className="w-full h-full object-cover" />
                   </div>
-                ))}
+                )}
 
-                {/* Status badge */}
-                <div>
-                  <p className="text-xs text-gray-400 mb-1">Status</p>
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      "text-[11px] font-bold px-2.5 py-1",
-                      statusStyle[modalItem.status]
-                    )}
-                  >
-                    {modalItem.status.toUpperCase()}
-                  </Badge>
+                {/* Info rows */}
+                <div className="space-y-3">
+                  {[
+                    { label: "Submitted by", value: modalItem.userName     },
+                    { label: "Email",         value: modalItem.userEmail    },
+                    { label: "Contest",       value: modalItem.contestTitle  },
+                    { label: "Content",       value: modalItem.content       },
+                    { label: "Submitted At",  value: modalItem.submittedAt   },
+                    ...(modalItem.votes !== undefined
+                      ? [{ label: "Total Votes", value: String(modalItem.votes) }]
+                      : []),
+                  ].map(({ label, value }) => (
+                    <div key={label}>
+                      <p className="text-xs text-gray-400 mb-0.5">{label}</p>
+                      <p className="text-sm text-gray-800 font-medium">{value}</p>
+                    </div>
+                  ))}
+
+                  {/* Status badge */}
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Status</p>
+                    <Badge variant="outline" className={cn("text-[11px] font-bold px-2.5 py-1", statusStyle[modalItem.status])}>
+                      {modalItem.status.toUpperCase()}
+                    </Badge>
+                  </div>
                 </div>
-              </div>
 
-              <Separator />
+                <Separator />
 
-              {/* Modal actions */}
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  onClick={() => updateStatus(modalItem.id, "Approved")}
-                  disabled={modalItem.status === "Approved"}
-                  className="h-11 bg-green-500 hover:bg-green-600 text-white font-semibold disabled:opacity-40"
-                >
-                  <Check className="w-4 h-4 mr-2" /> Approve
-                </Button>
-                <Button
-                  onClick={() => updateStatus(modalItem.id, "Rejected")}
-                  disabled={modalItem.status === "Rejected"}
-                  className="h-11 bg-[#A01C1C] hover:bg-[#851717] text-white font-semibold disabled:opacity-40"
-                >
-                  <X className="w-4 h-4 mr-2" /> Reject
-                </Button>
+                {/* ── Reject Reason — সবসময় visible ── */}
+                <div className="border border-gray-100 rounded-xl p-4 bg-gray-50/70 space-y-3">
+                  <p className="text-xs text-gray-500 font-medium">
+                    Rejection reason{" "}
+                    <span className="text-gray-400">(required to reject)</span>
+                  </p>
+
+                  {/* Quick presets */}
+                  <div className="flex flex-wrap gap-2">
+                    {REJECT_PRESETS.map((p) => (
+                      <button
+                        key={p}
+                        onClick={() => setRejectReason(rejectReason === p ? "" : p)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-lg border text-xs font-medium transition-all",
+                          rejectReason === p
+                            ? "bg-[#A01C1C] border-[#A01C1C] text-white"
+                            : "border-gray-200 bg-white text-gray-600 hover:border-[#A01C1C] hover:text-[#A01C1C]"
+                        )}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Custom textarea */}
+                  <textarea
+                    rows={3}
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value.slice(0, 300))}
+                    placeholder="Or write a custom reason for rejection..."
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-700 placeholder:text-gray-400 outline-none focus:ring-2 focus:ring-[#A01C1C]/20 focus:border-[#A01C1C] resize-none transition"
+                  />
+                  <p className="text-[11px] text-gray-400 text-right -mt-1">
+                    {rejectReason.length}/300
+                  </p>
+                </div>
+
+                {/* Action buttons */}
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Approve — reason লেখা থাকলে disabled */}
+                  <Button
+                    onClick={() => handleApprove(modalItem.id)}
+                    disabled={!!rejectReason.trim()}
+                    className="h-11 bg-green-500 hover:bg-green-600 text-white font-semibold disabled:opacity-30"
+                  >
+                    <Check className="w-4 h-4 mr-2" /> Approve
+                  </Button>
+
+                  {/* Reject — reason না থাকলে disabled */}
+                  <Button
+                    onClick={handleRejectConfirm}
+                    disabled={!rejectReason.trim()}
+                    className="h-11 bg-[#A01C1C] hover:bg-[#851717] text-white font-semibold disabled:opacity-30"
+                  >
+                    <X className="w-4 h-4 mr-2" /> Reject
+                  </Button>
+                </div>
               </div>
             </div>
           )}
