@@ -126,7 +126,20 @@ export default function GiveawayDetailsPage({ params }: { params: { id: string }
                     <div className="bg-[#FFF5F7] rounded-xl p-5 border border-red-100">
                       <h4 className="font-bold text-[#A01C1C] flex items-center gap-2 mb-2"><Trophy size={18} /> How to participate</h4>
                       <p className="text-sm text-gray-600">Complete the tasks listed to earn your chance to win.</p>
-                      <button onClick={handleParticipate} className="mt-4 px-6 py-3 bg-[#A01C1C] hover:bg-[#861717] text-white font-bold rounded-lg shadow-md transition-transform active:scale-95">Start Entry</button>
+                      <div className="mt-4 flex gap-3 flex-wrap">
+                        <button
+                          onClick={() => router.push(`/dashboard/giveaway/${params.id}`)}
+                          className="px-6 py-3 border border-green-500 text-green-500 hover:bg-green-100 font-bold rounded-lg transition-colors"
+                        >
+                          View Entries
+                        </button>
+                        <button
+                          onClick={handleParticipate}
+                          className="px-6 py-3 bg-[#A01C1C] hover:bg-[#861717] text-white font-bold rounded-lg shadow-md transition-transform active:scale-95"
+                        >
+                          Participate Now
+                        </button>
+                      </div>
                     </div>
                   </>
                 )}
@@ -134,11 +147,8 @@ export default function GiveawayDetailsPage({ params }: { params: { id: string }
 
               {/* Sidebar */}
               <div className="w-full lg:w-[350px] shrink-0 space-y-5">
-                <div className="flex gap-3 justify-end">
+                <div className="flex gap-2 justify-end flex-wrap">
                   <button className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium text-sm transition"><Share2 size={16} /> Share</button>
-                  {!contest.hasJoined && (
-                    <button onClick={handleParticipate} className="px-5 py-2 rounded-lg bg-[#A01C1C] text-white font-bold text-sm shadow hover:bg-[#861717]">Participate Now</button>
-                  )}
                 </div>
                 <div className="bg-[#F6F7FF] rounded-xl p-6">
                   <div className="flex items-center gap-2 text-[#5D5FEF] font-bold mb-3"><Trophy size={18} /> Grand Prize</div>
