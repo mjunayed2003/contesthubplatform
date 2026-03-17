@@ -35,12 +35,12 @@ export default function AdminSidebar() {
     <aside className="w-[272px] h-screen bg-white border-r border-gray-200 flex flex-col shrink-0 sticky top-0 left-0 overflow-y-auto">
 
       {/* Logo Section */}
-      <div className="flex items-center justify-start h-[68px] px-8 border-b border-gray-200">
+      <div className="flex items-center justify-center h-[68px] px-8 border-b border-gray-200">
         <Link href="/admin/dashboard">
           <Image
             src="/images/logo.svg"
             alt="Wuffoos Logo"
-            width={120}
+            width={78}
             height={36}
             className="object-contain"
             priority

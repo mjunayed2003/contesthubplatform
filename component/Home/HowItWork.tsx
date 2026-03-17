@@ -1,7 +1,6 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
-import Image from "next/image";
+import { ArrowRight, UserPlus, Trophy, Flame } from "lucide-react";
 
 const steps = [
   {
@@ -9,18 +8,21 @@ const steps = [
     title: "Join",
     description:
       "Browse contests and find ones that match your interests. Sign up with just a few clicks and you're ready to participate.",
+    Icon: UserPlus,
   },
   {
     number: "02",
     title: "Participate or Vote",
     description:
       "Complete tasks, submit your creative work, or vote for your favorite entries. Every action brings you closer to winning.",
+    Icon: Flame,
   },
   {
     number: "03",
     title: "Win",
     description:
       "Winners are announced when contests end. Claim your prizes and celebrate your SUCCess with the community.",
+    Icon: Trophy,
   },
 ];
 
@@ -64,19 +66,19 @@ export default function HowItWorks() {
               key={step.number}
               className="w-full lg:flex-1 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-300 p-6 sm:p-7"
               style={{
-                marginTop: i === 0 ? "0px" : i === 1 ? "clamp(0px, 4vw, 80px)" : "clamp(0px, 8vw, 160px)",
+                marginTop:
+                  i === 0
+                    ? "0px"
+                    : i === 1
+                    ? "clamp(0px, 4vw, 80px)"
+                    : "clamp(0px, 8vw, 160px)",
               }}
             >
               {/* Icon + Number Row */}
               <div className="flex items-start justify-between mb-8 sm:mb-10">
-                {/* Hexagon Icon */}
-                <div className="relative w-11 h-11 sm:w-12 sm:h-12">
-                  <Image
-                    src="/images/howitwork.svg"
-                    alt="step icon"
-                    fill
-                    className="object-contain"
-                  />
+                {/* Icon Box */}
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#A01C1C] flex items-center justify-center shrink-0">
+                  <step.Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
                 {/* Step Number */}
                 <span className="text-[clamp(28px,4vw,48px)] font-black text-gray-200 leading-none select-none">
