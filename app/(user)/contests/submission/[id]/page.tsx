@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { 
   ArrowLeft, Share2, Trophy, Clock, Users, 
-  CheckCircle, UploadCloud, FileText, CheckSquare, AlertCircle 
+  CheckCircle, UploadCloud, FileText, AlertCircle, Flag, X 
 } from "lucide-react";
 
 export default function SubmissionDetailsPage({ params }: { params: { id: string } }) {
@@ -22,10 +22,16 @@ export default function SubmissionDetailsPage({ params }: { params: { id: string
   const [agreed, setAgreed] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // --- REPORT MODAL STATE ---
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportText, setReportText] = useState("");
+  const [isReporting, setIsReporting] = useState(false);
+  const [reportSuccess, setReportSuccess] = useState(false);
+
   // --- MOCK DATA ---
   const contest = {
     id: params.id,
-    title: "Win a Premium Gaming Setup", // Using the title from your card
+    title: "Win a Premium Gaming Setup", 
     type: "submission",
     deadline: "25 June 2026",
     status: "Active",
@@ -57,6 +63,25 @@ export default function SubmissionDetailsPage({ params }: { params: { id: string
     }, 2000);
   };
 
+  // Report Submit Handler
+  const handleReportSubmit = () => {
+    if (!reportText.trim()) return;
+    setIsReporting(true);
+    
+    // Simulate API Call for reporting
+    setTimeout(() => {
+      setIsReporting(false);
+      setReportSuccess(true);
+      
+      // Auto close modal after success
+      setTimeout(() => {
+        setShowReportModal(false);
+        setReportSuccess(false);
+        setReportText("");
+      }, 2000);
+    }, 1500);
+  };
+
   return (
     <div className="min-h-screen bg-[#F8F9FB] pb-20 font-sans">
       
@@ -71,6 +96,7 @@ export default function SubmissionDetailsPage({ params }: { params: { id: string
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 mb-8">
         <div className="relative w-full h-[250px] sm:h-[350px] rounded-[24px] overflow-hidden shadow-sm bg-gray-800">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-900 to-blue-900 opacity-80" />
+            <div className="absolute inset-0 flex items-center justify-center text-white/50">Banner Image</div>
             <Image src={contest.image} alt="Banner" fill className="object-cover opacity-80" priority />
         </div>
       </div>
@@ -84,7 +110,7 @@ export default function SubmissionDetailsPage({ params }: { params: { id: string
             <div className="flex flex-col lg:flex-row gap-10">
               
               {/* Left Content */}
-              <div className="flex-1">
+              <div className="flex-1 order-2 lg:order-1">
                 {/* Badges */}
                 <div className="flex gap-3 mb-4">
                   <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wide flex items-center gap-2">
@@ -151,9 +177,19 @@ export default function SubmissionDetailsPage({ params }: { params: { id: string
               </div>
 
               {/* Right Sidebar */}
-              <div className="w-full lg:w-[350px] shrink-0 space-y-5">
-                 <div className="flex gap-3 justify-end">
-                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium text-sm transition"><Share2 size={16} /> Share</button>
+              <div className="w-full lg:w-[350px] shrink-0 space-y-5 order-1 lg:order-2">
+                 
+                 {/* ─── Share & Report Buttons ─── */}
+                 <div className="flex gap-2 justify-end flex-wrap">
+                    <button 
+                      onClick={() => setShowReportModal(true)}
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-100 text-red-600 bg-red-50 hover:bg-red-100 font-medium text-sm transition"
+                    >
+                      <Flag size={16} /> Report
+                    </button>
+                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium text-sm transition">
+                      <Share2 size={16} /> Share
+                    </button>
                 </div>
 
                 <div className="bg-[#F6F7FF] rounded-xl p-6">
@@ -276,6 +312,77 @@ export default function SubmissionDetailsPage({ params }: { params: { id: string
 
         </div>
       </div>
+
+      {/* ================= REPORT MODAL ================= */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl relative animate-in zoom-in-95 duration-200">
+            
+            {/* Close Button */}
+            {!reportSuccess && (
+              <button 
+                onClick={() => setShowReportModal(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 hover:bg-gray-100 p-1 rounded-md transition"
+              >
+                <X size={20} />
+              </button>
+            )}
+
+            {/* Modal Content */}
+            {reportSuccess ? (
+              <div className="py-8 flex flex-col items-center text-center">
+                <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
+                  <CheckCircle size={32} />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Report Submitted</h3>
+                <p className="text-gray-500 text-sm">Thank you for letting us know. We will review this submission contest shortly.</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-red-100 text-red-600 rounded-lg">
+                    <Flag size={20} />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">Report Contest</h3>
+                </div>
+                
+                <p className="text-sm text-gray-500 mb-4">
+                  Please describe why you are reporting this submission contest. Your report will be sent to the admin team for review.
+                </p>
+
+                <textarea
+                  rows={4}
+                  value={reportText}
+                  onChange={(e) => setReportText(e.target.value)}
+                  placeholder="E.g., Copyright violation, inappropriate content, spam..."
+                  className="w-full border border-gray-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none resize-none transition"
+                ></textarea>
+
+                <div className="mt-6 flex gap-3">
+                  <button 
+                    onClick={() => setShowReportModal(false)}
+                    className="flex-1 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={handleReportSubmit}
+                    disabled={isReporting || !reportText.trim()}
+                    className={`flex-1 py-2.5 font-semibold rounded-lg text-white transition flex items-center justify-center gap-2 ${
+                      isReporting || !reportText.trim() 
+                        ? "bg-gray-300 cursor-not-allowed" 
+                        : "bg-red-600 hover:bg-red-700 shadow-md"
+                    }`}
+                  >
+                    {isReporting ? "Submitting..." : "Submit Report"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
