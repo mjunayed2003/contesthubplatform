@@ -7,16 +7,14 @@ import { Toast }                from "@/component/admin/settings/shared";
 import { ProfileSection }       from "@/component/admin/settings/ProfileSection";
 import { SecuritySection }      from "@/component/admin/settings/SecuritySection";
 import { NotificationsSection } from "@/component/admin/settings/NotificationsSection";
-import { PreferencesSection }   from "@/component/admin/settings/PreferencesSection";
 import { DangerSection }        from "@/component/admin/settings/DangerSection";
 
-type SettingTab = "profile" | "security" | "notifications" | "preferences" | "danger";
+type SettingTab = "profile" | "security" | "notifications" | "danger";
 
 const NAV_ITEMS = [
   { key: "profile"       as SettingTab, label: "Profile",       icon: User,   description: "Personal info & avatar"        },
   { key: "security"      as SettingTab, label: "Security",       icon: Lock,   description: "Password & sessions"           },
   { key: "notifications" as SettingTab, label: "Notifications",  icon: Bell,   description: "Email & push alerts"           },
-  { key: "preferences"   as SettingTab, label: "Preferences",    icon: Globe,  description: "Language, timezone & display"  },
   { key: "danger"        as SettingTab, label: "Danger Zone",    icon: Shield, description: "Delete or deactivate account"  },
 ];
 
@@ -98,7 +96,6 @@ export default function SettingsPage() {
           {activeTab === "profile"       && <ProfileSection       onSave={setToast} />}
           {activeTab === "security"      && <SecuritySection      onSave={setToast} />}
           {activeTab === "notifications" && <NotificationsSection onSave={setToast} />}
-          {activeTab === "preferences"   && <PreferencesSection   onSave={setToast} />}
           {activeTab === "danger"        && <DangerSection />}
         </main>
       </div>
